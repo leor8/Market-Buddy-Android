@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#356ab0"
+    tools:context=".Login">
+
+    <TextView
+        android:id="@+id/users_name"
+        android:layout_width="336dp"
+        android:layout_height="55dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginLeft="24dp"
+        android:layout_marginRight="24dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="16dp"
+        android:textColor="@android:color/white"
+        android:textSize="36sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/shopping_lists"
+        android:layout_width="333dp"
+        android:layout_height="400dp"
+        android:layout_marginBottom="30dp"
+        android:layout_marginEnd="23dp"
+        android:layout_marginLeft="24dp"
+        android:layout_marginRight="23dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="10dp"
+        android:background="@android:color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/users_name"
+        app:layout_constraintVertical_bias="0.0"
+        tools:listitem="@layout/lists_single" />
+
+    <Button
+        android:id="@+id/button4"
+        android:layout_width="66dp"
+        android:layout_height="64dp"
+        android:layout_marginBottom="82dp"
+        android:layout_marginEnd="312dp"
+        android:layout_marginLeft="24dp"
+        android:layout_marginRight="312dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="9dp"
+        android:background="@drawable/roundedbutton"
+        android:onClick="dialog"
+        android:text="New"
+        android:textColor="@android:color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/shopping_lists" />
+
+</android.support.constraint.ConstraintLayout>
