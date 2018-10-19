@@ -5,5 +5,6 @@ public class Constant {
     public static final String TABLE_NAME = "SHOPPINGLIST";
     public static final String UID = "_id";
     public static final String NAME = "Name";
-    public static final int DATABASE_VERSION = 1;
+    public static final String DONE = "No";
+    public static final int DATABASE_VERSION = 2;
 }

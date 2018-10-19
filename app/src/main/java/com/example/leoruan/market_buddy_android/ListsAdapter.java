@@ -1,22 +1,28 @@
 package com.example.leoruan.market_buddy_android;
 
 import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.List;
 
 public class ListsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private Context context;
     private List<String> lists;
+    List_db db;
 
     public ListsAdapter(Context context, List<String> lists) {
         this.context = context;
         this.lists = lists;
+        db = new List_db(context);
     }
 
     @Override
@@ -29,7 +35,7 @@ public class ListsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position){
-        ((Item)holder).list_name.setText(lists.get(position));
+        ((Item)holder).list_name.setText(lists.get(position).toString());
     }
 
     @Override
@@ -63,6 +69,7 @@ public class ListsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                         lists.remove(getLayoutPosition());
                         notifyItemRemoved(getLayoutPosition());
                         notifyItemRangeChanged(getLayoutPosition(), lists.size());
+                        db.deleteData(name);
                     }
                 }
             }

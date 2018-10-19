@@ -3,6 +3,7 @@ package com.example.leoruan.market_buddy_android;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -28,6 +29,9 @@ public class UserProfile extends AppCompatActivity {
     RecyclerView lists;
     List<String> shopping_lists = new ArrayList<String>();
 
+    List_db db;
+    List_Helper helper;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,6 +43,22 @@ public class UserProfile extends AppCompatActivity {
         lists = findViewById(R.id.shopping_lists);
         lists.setLayoutManager(new LinearLayoutManager(this));
         lists.setAdapter(new ListsAdapter(this, shopping_lists));
+        db = new List_db(this);
+        helper = new List_Helper(this);
+
+        Cursor cursor = db.GetData();
+
+         //Retrieving database lists
+        int index1 = cursor.getColumnIndex(Constant.NAME);
+        cursor.moveToFirst();
+        while (!cursor.isAfterLast()) {
+            String list_name = cursor.getString(index1);
+            shopping_lists.add(0, list_name);
+            cursor.moveToNext();
+        }
+
+
+
 
         try {
             SharedPreferences user_prefs = getSharedPreferences("UserData", Context.MODE_PRIVATE);
@@ -75,6 +95,10 @@ public class UserProfile extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(), "You did not enter a list name", Toast.LENGTH_SHORT).show();
                 } else {
                     shopping_lists.add(0, list_name);
+                    long id = db.InsertData(list_name);
+                    if (id < 0) {
+                        Toast.makeText(getApplicationContext(), "There is an error creating the list, please try again later", Toast.LENGTH_SHORT).show();
+                    }
                     lists.setAdapter(new ListsAdapter(getApplicationContext(), shopping_lists));
                     // TODO: go to adding product page
 
