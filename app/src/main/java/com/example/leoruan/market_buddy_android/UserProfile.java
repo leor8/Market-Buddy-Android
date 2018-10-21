@@ -2,6 +2,7 @@ package com.example.leoruan.market_buddy_android;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -101,7 +102,9 @@ public class UserProfile extends AppCompatActivity {
                     }
                     lists.setAdapter(new ListsAdapter(getApplicationContext(), shopping_lists));
                     // TODO: go to adding product page
-
+                    Intent i = new Intent(getApplicationContext(), List_Edit.class);
+                    i.putExtra("LISTNAME", list_name);
+                    startActivity(i);
                 }
             }
         });

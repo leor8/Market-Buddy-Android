@@ -1,6 +1,7 @@
 package com.example.leoruan.market_buddy_android;
 
 import android.content.Context;
+import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -76,6 +77,9 @@ public class ListsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
             if(v.getId() == R.id.edit_list) {
                 // TODO: pass intent with the name of the list and start activity edit list
+                Intent i = new Intent(context, List_Edit.class);
+                i.putExtra("LISTNAME", name);
+                context.startActivity(i);
             }
 
         } // On click closing bracket
