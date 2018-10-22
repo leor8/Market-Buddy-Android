@@ -9,10 +9,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.List;
 
 public class ItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+    // TODO: now item adapter will have the listid being passed in, use it to save data after db todos are done
     private Context context;
     private List<com.example.leoruan.market_buddy_android.Item> items;
 

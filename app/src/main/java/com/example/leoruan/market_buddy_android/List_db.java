@@ -35,7 +35,7 @@ public class List_db {
     {
         //select plants from database of type 'herb'
         SQLiteDatabase db = helper.getWritableDatabase();
-        String[] columns = {Constant.NAME};
+        String[] columns = {Constant.NAME, Constant.UID};
 
         String selection = Constant.NAME + "='" + name + "'";
         Cursor cursor = db.query(Constant.TABLE_NAME, columns, selection, null, null, null, null);
@@ -44,8 +44,10 @@ public class List_db {
         while (cursor.moveToNext()) {
 
             int index1 = cursor.getColumnIndex(Constant.NAME);
+            int index2 = cursor.getColumnIndex(Constant.UID);
             String listName = cursor.getString(index1);
-            buffer.append(listName);
+            String listId = cursor.getString(index2);
+            buffer.append(listName + " " + listId + "\n");
         }
         return buffer.toString();
     }

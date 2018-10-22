@@ -31,6 +31,10 @@ public class List_Edit extends AppCompatActivity {
 
     RecyclerView items;
 
+    List_db listdb;
+    List_Helper listhelper;
+    String listid;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,13 +45,22 @@ public class List_Edit extends AppCompatActivity {
         received = getIntent();
 
         list.setText(received.getStringExtra("LISTNAME"));
-        temp_item.add(new Item("a", 1));
-        temp_item.add(new Item("b", 1));
-        temp_item.add(new Item("a", 1));
 
+        // Getting all the existing items from db
+        listdb = new List_db(this);
+        listhelper = new List_Helper(this);
+
+        listid = (listdb.getSelectedData(list.getText().toString())).substring(listdb.getSelectedData(list.getText().toString()).lastIndexOf(" ") + 1);
+
+        // Dummy Data
+        temp_item.add(new Item("a", 1, listid));
+        temp_item.add(new Item("b", 1, listid));
+        temp_item.add(new Item("a", 1, listid));
+        // Setting up Recyclerview
         items = findViewById(R.id.user_picked_items);
         items.setLayoutManager(new LinearLayoutManager(this));
         items.setAdapter(new ItemAdapter(this, user_selected));
+
     }
 
     public void start_searching(View v) {
@@ -74,7 +87,7 @@ public class List_Edit extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 // This will be used to display recyclerview outside
-                user_selected.add(new Item(filtered_array[which], 1));
+                user_selected.add(new Item(filtered_array[which], 1, listid));
                 items.setAdapter(new ItemAdapter(getApplicationContext(), user_selected));
             }
         });

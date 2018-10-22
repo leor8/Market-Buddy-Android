@@ -101,7 +101,6 @@ public class UserProfile extends AppCompatActivity {
                         Toast.makeText(getApplicationContext(), "There is an error creating the list, please try again later", Toast.LENGTH_SHORT).show();
                     }
                     lists.setAdapter(new ListsAdapter(getApplicationContext(), shopping_lists));
-                    // TODO: go to adding product page
                     Intent i = new Intent(getApplicationContext(), List_Edit.class);
                     i.putExtra("LISTNAME", list_name);
                     startActivity(i);

@@ -76,7 +76,6 @@ public class ListsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             }
 
             if(v.getId() == R.id.edit_list) {
-                // TODO: pass intent with the name of the list and start activity edit list
                 Intent i = new Intent(context, List_Edit.class);
                 i.putExtra("LISTNAME", name);
                 context.startActivity(i);
