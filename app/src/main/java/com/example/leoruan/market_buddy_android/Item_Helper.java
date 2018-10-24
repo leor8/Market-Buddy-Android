@@ -4,6 +4,7 @@ import android.content.Context;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 import android.widget.Toast;
 
 public class Item_Helper extends SQLiteOpenHelper {
@@ -13,7 +14,7 @@ public class Item_Helper extends SQLiteOpenHelper {
             "CREATE TABLE " +
                     Item_Constant.TABLE_NAME + " (" +
                     Item_Constant.UID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                    Item_Constant.NAME + "TEXT, " +
+                    Item_Constant.NAME + " TEXT, " +
                     Item_Constant.QUANTITY + " TEXT, " +
                     Item_Constant.LISTID + " TEXT);" ;
 
@@ -27,6 +28,7 @@ public class Item_Helper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         try {
+            Log.d("DEBUG555", CREATE_TABLE);
             db.execSQL(CREATE_TABLE);
         } catch (SQLException e) {
             Toast.makeText(context, "Error Creating item db", Toast.LENGTH_LONG).show();
