@@ -7,5 +7,6 @@ public class Item_Constant {
     public static final String NAME = "Name";
     public static final String QUANTITY = "Count";
     public static final String LISTID = "ListId";
-    public static final int DATABASE_VERSION = 5;
+    public static final String PRICE = "Price";
+    public static final int DATABASE_VERSION = 6;
 }

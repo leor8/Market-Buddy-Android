@@ -5,12 +5,14 @@ public class Item {
     private int quantity;
     private String listid;
     private String itemid;
+    private String price;
 
-    Item(String item_name, int quantity, String listid, String itemid) {
+    Item(String item_name, int quantity, String listid, String itemid, String price) {
         this.item_name = item_name;
         this.quantity = quantity;
         this.listid = listid;
         this.itemid = itemid;
+        this.price = price;
     }
 
     public void update_quantity(int amount) {
@@ -28,4 +30,6 @@ public class Item {
     public String get_item_listid() { return listid; }
 
     public String get_item_itemid() { return itemid; }
+
+    public String get_item_price() { return price; }
 }

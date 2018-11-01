@@ -76,14 +76,14 @@ public class ItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             if(v.getId() == R.id.add) {
                 items.get(curr_pos).update_quantity(1);
                 item_count.setText(String.valueOf(items.get(curr_pos).get_item_quantity()));
-                db.updateData(name, Integer.toString(items.get(curr_pos).get_item_quantity()), items.get(curr_pos).get_item_listid());
+//                db.updateData(name, Integer.toString(items.get(curr_pos).get_item_quantity()), items.get(curr_pos).get_item_listid());
             }
 
             if(v.getId() == R.id.minus) {
                 if(items.get(curr_pos).get_item_quantity() > 0) {
                     items.get(curr_pos).update_quantity(-1);
                     item_count.setText(String.valueOf(items.get(curr_pos).get_item_quantity()));
-                    db.updateData(name, Integer.toString(items.get(curr_pos).get_item_quantity()), items.get(curr_pos).get_item_listid());
+//                    db.updateData(name, Integer.toString(items.get(curr_pos).get_item_quantity()), items.get(curr_pos).get_item_listid());
                 }
             }
 
@@ -91,7 +91,7 @@ public class ItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 items.remove(getLayoutPosition());
                 notifyItemRemoved(getLayoutPosition());
                 notifyItemRangeChanged(getLayoutPosition(), items.size());
-                db.deleteRow(name, items.get(curr_pos).get_item_listid());
+//                db.deleteRow(name, items.get(curr_pos).get_item_listid());
             }
         } // On click closing bracket
 

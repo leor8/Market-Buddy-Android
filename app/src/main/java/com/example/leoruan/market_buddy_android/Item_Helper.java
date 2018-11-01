@@ -16,6 +16,7 @@ public class Item_Helper extends SQLiteOpenHelper {
                     Item_Constant.UID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                     Item_Constant.NAME + " TEXT, " +
                     Item_Constant.QUANTITY + " TEXT, " +
+                    Item_Constant.PRICE + " TEXT, " +
                     Item_Constant.LISTID + " TEXT);" ;
 
     private static final String DROP_TABLE = "DROP TABLE IF EXISTS " + Item_Constant.TABLE_NAME;

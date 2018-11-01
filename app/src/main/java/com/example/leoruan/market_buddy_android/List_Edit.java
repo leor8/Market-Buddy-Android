@@ -23,14 +23,17 @@ import android.widget.Toast;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Array;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class List_Edit extends AppCompatActivity {
@@ -52,11 +55,12 @@ public class List_Edit extends AppCompatActivity {
 
     Boolean result_received = false;
 
+    View update_view;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit);
-
         list = findViewById(R.id.list_info_name);
         search = findViewById(R.id.search_input);
         received = getIntent();
@@ -72,24 +76,9 @@ public class List_Edit extends AppCompatActivity {
         itemdb = new Item_db(this);
         itemhelper = new Item_Helper(this);
 
-        Cursor cursor = itemdb.getData(listid);
+        user_selected = itemdb.getData(listid);
 
         checkConnection();
-        // Initializing user selected arraylist
-//        int index1 = cursor.getColumnIndex(Item_Constant.NAME);
-//        int index2 = cursor.getColumnIndex(Item_Constant.QUANTITY);
-//        cursor.moveToFirst();
-//        while(!cursor.isAfterLast()) {
-//            String itemname = cursor.getString(index1);
-//            int itemcount = Integer.parseInt(cursor.getString(index2));
-//            user_selected.add(new Item(itemname, itemcount, listid));
-//            cursor.moveToNext();
-//        }
-
-        // Dummy Data to search list, this part will be replaced with an api call to walmart api
-        temp_item.add(new Item("a", 1, listid, "123"));
-        temp_item.add(new Item("b", 1, listid, "234"));
-        temp_item.add(new Item("a", 1, listid, "345"));
 
         // Setting up Recyclerview
         items = findViewById(R.id.user_picked_items);
@@ -99,52 +88,66 @@ public class List_Edit extends AppCompatActivity {
     }
 
     public void start_searching(View v) {
-        result_received = true; // Set this to false when using real data from api
+        update_view = v;
+//        result_received = true; // Set this to false when using real data from api
         String search_query = search.getText().toString();
+
+        // Getting filtered result
+        String myUrl = "http://api.walmartlabs.com/v1/search?apiKey=82fg7wp8wb54kxfxdhkaezrx&query=" + search_query;
+//        String myUrl = "http://ws.geonames.org/findNearByWeatherJSON?lat=49.192474&lng=-122.820282&username=demo";
+        new ReadJSONDataTask().execute(myUrl);
+    }
+
+    private void display_result() {
+        final String search_query = search.getText().toString();
         final AlertDialog.Builder search_results = new AlertDialog.Builder(this);
         search_results.setTitle("Search Result");
 
-        // Getting filtered result
-//        String myUrl = "http://api.walmartlabs.com/v1/search?apiKey=82fg7wp8wb54kxfxdhkaezrx&query=ipod";
-//
-//        new ReadJSONDataTask().execute(myUrl);
+        final List<Item> filtered_result = temp_item;
 
-        if(result_received) {
-            List<Item> filtered_result = new ArrayList<Item>();
-            for (int i = 0; i < temp_item.size(); i++) {
-                if (temp_item.get(i).get_item_name().equals(search_query)) {
-                    filtered_result.add(temp_item.get(i));
-                }
-            }
-
-            // Dialog only accepts array
+        // Dialog only accepts array
+        if(filtered_result.size() > 0) {
             final String[] filtered_array = new String[filtered_result.size()];
             final String[] id_array = new String[filtered_result.size()];
+            final String[] price_array = new String[filtered_result.size()];
             for (int i = 0; i < filtered_result.size(); i++) {
                 filtered_array[i] = filtered_result.get(i).get_item_name();
                 id_array[i] = filtered_result.get(i).get_item_itemid();
+                price_array[i] = filtered_result.get(i).get_item_price();
             }
-
             // Setting dialog
             search_results.setItems(filtered_array, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     // This will be used to display recyclerview outside
-                    user_selected.add(new Item(filtered_array[which], 1, listid, id_array[which]));
+                    Log.d("Debug555", "The item you just picked costs: " + price_array[which]);
+                    if (user_selected.size() == 0) {
+                        user_selected.add(new Item(filtered_array[which], 1, listid, id_array[which], price_array[which]));
+                    } else {
+                        for (int i = 0; i < user_selected.size(); i++) {
+                            if (id_array[which].equals(user_selected.get(i).get_item_itemid())) {
+                                user_selected.get(i).update_quantity(1);
+                                break;
+                            } else if (i == user_selected.size() - 1) {
+                                user_selected.add(new Item(filtered_array[which], 1, listid, id_array[which], price_array[which]));
+                                break;
+                            }
+                        }
+                    }
                     items.setAdapter(new ItemAdapter(getApplicationContext(), user_selected));
-
-                    long id = itemdb.insertData(filtered_array[which], "1", listid);
-                    Log.d("DEBUG555", "" + id);
+                    temp_item.clear();
+                    filtered_result.clear();
+                    dialog.dismiss();
                 }
             });
         } else {
-            search_results.setMessage("Loading...");
+            search_results.setMessage("The item you are looking for is not found.");
         }
 
         search_results.setCancelable(true);
         search_results.show();
-    }
 
+    }
     public void checkConnection(){
         ConnectivityManager connectMgr =
                 (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -159,13 +162,14 @@ public class List_Edit extends AppCompatActivity {
             //display error
             Toast.makeText(this, "no network connection", Toast.LENGTH_LONG).show();
         }
+
     }
 
     private String readJSONData(String myurl) throws IOException {
         InputStream is = null;
         // Only display the first 500 characters of the retrieved
         // web page content.
-        int len = 2500;
+        int len = 25;
 
         URL url = new URL(myurl);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -179,7 +183,6 @@ public class List_Edit extends AppCompatActivity {
             conn.connect();
             int response = conn.getResponseCode();
             is = conn.getInputStream();
-            Log.d("DEBUG555", ""+ response);
 
             // Convert the InputStream into a string
             String contentAsString = readIt(is, len);
@@ -197,11 +200,19 @@ public class List_Edit extends AppCompatActivity {
 
     // Reads an InputStream and converts it to a String.
     public String readIt(InputStream stream, int len) throws IOException, UnsupportedEncodingException {
-        Reader reader = null;
-        reader = new InputStreamReader(stream, "UTF-8");
-        char[] buffer = new char[len];
-        reader.read(buffer);
-        return new String(buffer);
+//        Reader reader = null;
+//        reader = new InputStreamReader(stream, "UTF-8");
+//        char[] buffer = new char[];
+//        reader.read(buffer);
+//        return new String(buffer);
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(stream));
+        String line = "";
+        String result = "";
+        while ((line = bufferedReader.readLine()) != null) {
+            result += line;
+        }
+        stream.close();
+        return result;
     }
 
 
@@ -222,16 +233,37 @@ public class List_Edit extends AppCompatActivity {
             try {
                 JSONObject jsonObject = new JSONObject(result);
                 JSONArray results = jsonObject.getJSONArray("items");
-                for(int i = 0; i < results.length(); i++) {
+                for(int i = 0; i < 8; i++) {
                     JSONObject curr_obj = results.getJSONObject(i);
-                    temp_item.add(new Item(curr_obj.getString("name"), 1, listid, curr_obj.getString("itemId")));
-                    result_received = true;
+                    temp_item.add(new Item(curr_obj.getString("name"), 1, listid, curr_obj.getString("itemId"), curr_obj.getString("salePrice")));
                 }
+                display_result();
             } catch (Exception e) {
                 exception = e;
+                display_result();
             }
 
         }
 
     }
+
+    public void back(View v) {
+        itemdb.insertWholeList(user_selected, listid);
+        Intent i = new Intent(getApplicationContext(), UserProfile.class);
+        startActivity(i);
+    }
+
+    public void pricePage(View v) {
+        itemdb.insertWholeList(user_selected, listid);
+        Intent i = new Intent(getApplicationContext(), Prices.class);
+        i.putExtra("LISTID", listid);
+        startActivity(i);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        itemdb.insertWholeList(user_selected, listid);
+    }
+
 }
