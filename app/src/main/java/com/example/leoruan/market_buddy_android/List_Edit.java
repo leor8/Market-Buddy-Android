@@ -93,7 +93,7 @@ public class List_Edit extends AppCompatActivity {
         String search_query = search.getText().toString();
 
         // Getting filtered result
-        String myUrl = "http://api.walmartlabs.com/v1/search?apiKey={YourAPIKey}&query=" + search_query;
+        String myUrl = "http://api.walmartlabs.com/v1/search?apiKey=82fg7wp8wb54kxfxdhkaezrx&query=" + search_query;
         new ReadJSONDataTask().execute(myUrl);
     }
 
