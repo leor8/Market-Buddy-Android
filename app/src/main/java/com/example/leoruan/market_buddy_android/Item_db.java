@@ -13,12 +13,14 @@ import java.util.List;
 public class Item_db {
 
     private SQLiteDatabase db;
+    private Price_db price_db;
     private Context context;
     private final Item_Helper helper;
 
     public Item_db (Context c){
         context = c;
         helper = new Item_Helper(context);
+        price_db = new Price_db(context);
     }
 
     public long insertData (String name, String quantity, String listId, String price)
@@ -47,7 +49,9 @@ public class Item_db {
             contentValues.put(Item_Constant.QUANTITY, items.get(i).get_item_quantity());
             contentValues.put(Item_Constant.LISTID, items.get(i).get_item_listid());
             contentValues.put(Item_Constant.PRICE, items.get(i).get_item_price());
+            contentValues.put(Item_Constant.UID, items.get(i).get_item_itemid());
             id = db.insert(Item_Constant.TABLE_NAME, null, contentValues);
+            price_db.insertData(items.get(i).get_item_price(), items.get(i).get_item_itemid());
             if(id < 0) {
                 return id;
             }
@@ -96,8 +100,6 @@ public class Item_db {
         //select plants from database of type 'herb'
         SQLiteDatabase db = helper.getWritableDatabase();
         String[] columns = {Item_Constant.NAME, Item_Constant.QUANTITY};
-
-        // TODO: Include the list id in select clause
         String selection = Item_Constant.NAME + "='" + name + "' AND " + Item_Constant.LISTID + "='" + listId + "'";  //Constants.TYPE = 'type'
         Cursor cursor = db.query(Item_Constant.TABLE_NAME, columns, selection, null, null, null, null);
 
@@ -115,9 +117,15 @@ public class Item_db {
 
     public int deleteRow(String itemName, String listid){
         SQLiteDatabase db = helper.getWritableDatabase();
-        // TODO: check if the list id is the same
         String[] whereArgs = {itemName, listid};
         int count = db.delete(Item_Constant.TABLE_NAME, Item_Constant.NAME + "=? AND " + Item_Constant.LISTID + "=?", whereArgs);
+        return count;
+    }
+
+    public int deleteByList(String listid) {
+        SQLiteDatabase db = helper.getWritableDatabase();
+        String[] whereArgs = {listid};
+        int count = db.delete(Item_Constant.TABLE_NAME, Item_Constant.LISTID +"=?", whereArgs);
         return count;
     }
 }

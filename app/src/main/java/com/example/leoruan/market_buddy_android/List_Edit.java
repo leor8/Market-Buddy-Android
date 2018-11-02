@@ -137,6 +137,7 @@ public class List_Edit extends AppCompatActivity {
                     items.setAdapter(new ItemAdapter(getApplicationContext(), user_selected));
                     temp_item.clear();
                     filtered_result.clear();
+                    search.setText("");
                     dialog.dismiss();
                 }
             });

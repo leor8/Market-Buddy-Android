@@ -7,12 +7,14 @@ import android.database.sqlite.SQLiteDatabase;
 
 public class List_db {
     private SQLiteDatabase list_db;
+    private Item_db item_db;
     private Context context;
     private final List_Helper helper;
 
     public List_db(Context c) {
         context = c;
         helper = new List_Helper(context);
+        item_db = new Item_db(context);
     }
 
     public long InsertData (String name) {
