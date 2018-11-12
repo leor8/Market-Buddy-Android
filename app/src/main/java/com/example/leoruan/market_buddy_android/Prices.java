@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +34,11 @@ public class Prices extends AppCompatActivity {
         stores = findViewById(R.id.StoreLists);
         stores.setLayoutManager(new LinearLayoutManager(this));
         stores.setAdapter(new StoreAdapter(this, store_names, listid));
+    }
+
+    public void startMap(View v) {
+        Intent i = new Intent(this, Map.class);
+        startActivity(i);
     }
 
 }

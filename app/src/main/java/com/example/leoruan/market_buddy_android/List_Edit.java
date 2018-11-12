@@ -5,6 +5,10 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
@@ -36,7 +40,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class List_Edit extends AppCompatActivity {
+public class List_Edit extends AppCompatActivity implements SensorEventListener{
     final static String DEFAULT = "not available";
     TextView list;
     EditText search;
@@ -53,9 +57,15 @@ public class List_Edit extends AppCompatActivity {
     Item_Helper itemhelper;
     String listid;
 
-    Boolean result_received = false;
+    Boolean result_received = true;
 
-    View update_view;
+    SensorManager sensorManager;
+    Sensor acc;
+    private boolean shakable = true;
+    long lastUpdate;
+    double last_x, last_y, last_z;
+    private static final int SHAKE_THRESHOLD = 800;
+    boolean first = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,12 +95,16 @@ public class List_Edit extends AppCompatActivity {
         items.setLayoutManager(new LinearLayoutManager(this));
         items.setAdapter(new ItemAdapter(this, user_selected));
 
+        sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+        acc = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        lastUpdate = System.currentTimeMillis();
+
     }
 
     public void start_searching(View v) {
-        update_view = v;
 //        result_received = true; // Set this to false when using real data from api
         String search_query = search.getText().toString();
+        shakable = false;
 
         // Getting filtered result
         String myUrl = "http://api.walmartlabs.com/v1/search?apiKey=82fg7wp8wb54kxfxdhkaezrx&query=" + search_query;
@@ -137,6 +151,7 @@ public class List_Edit extends AppCompatActivity {
                     temp_item.clear();
                     filtered_result.clear();
                     search.setText("");
+                    shakable = true;
                     dialog.dismiss();
                 }
             });
@@ -200,11 +215,6 @@ public class List_Edit extends AppCompatActivity {
 
     // Reads an InputStream and converts it to a String.
     public String readIt(InputStream stream, int len) throws IOException, UnsupportedEncodingException {
-//        Reader reader = null;
-//        reader = new InputStreamReader(stream, "UTF-8");
-//        char[] buffer = new char[];
-//        reader.read(buffer);
-//        return new String(buffer);
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(stream));
         String line = "";
         String result = "";
@@ -266,4 +276,75 @@ public class List_Edit extends AppCompatActivity {
         itemdb.insertWholeList(user_selected, listid);
     }
 
+
+    // Sensor required events
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+        int type = event.sensor.getType();
+        if(type == Sensor.TYPE_ACCELEROMETER && shakable && !first) {
+            long curTime = System.currentTimeMillis();
+            if ((curTime - lastUpdate) > 100) {
+                long diffTime = (curTime - lastUpdate);
+                lastUpdate = curTime;
+
+                double x = event.values.clone()[0];
+                double y = event.values.clone()[1];
+                double z = event.values.clone()[2];
+
+                double speed = Math.abs(x+y+z - last_x - last_y - last_z) / diffTime * 10000;
+                if (speed > SHAKE_THRESHOLD) {
+                    shakable = false;
+                    final AlertDialog.Builder clearItem = new AlertDialog.Builder(this);
+                    clearItem.setTitle("Do you want to clear all the items in the list?");
+                    clearItem.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            shakable = true;
+                        }
+                    });
+                    clearItem.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            user_selected.clear();
+                            items.setAdapter(new ItemAdapter(getApplicationContext(), user_selected));
+                            shakable = true;
+                        }
+                    });
+                    clearItem.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                        @Override
+                        public void onCancel(DialogInterface dialog) {
+                            shakable = true;
+                        }
+                    });
+                    clearItem.show();
+                    clearItem.setCancelable(true);
+                }
+                last_x = x;
+                last_y = y;
+                last_z = z;
+            }
+        } else if (first) {
+            last_x = event.values.clone()[0];
+            last_y = event.values.clone()[1];
+            last_z = event.values.clone()[2];
+            first = false;
+        }
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor s, int i) {
+    }
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        sensorManager.registerListener((SensorEventListener) this, acc, SensorManager.SENSOR_DELAY_NORMAL);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        sensorManager.unregisterListener(this);
+    }
 }

@@ -1,11 +1,13 @@
 package com.example.leoruan.market_buddy_android;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.View;
 import android.widget.TextView;
 
 import java.util.List;
@@ -59,5 +61,36 @@ public class StoreDetail extends AppCompatActivity {
             total += with_quantity;
         }
         return String.format("%.02f", total);
+    }
+
+    public void storeWebsite(View v) {
+        String currStore = storename.getText().toString();
+        String URL = "www.google.ca";
+        switch (currStore) {
+            case "Save On Foods":
+                URL = "https://www.saveonfoods.com/";
+                break;
+            case "Safeway":
+                URL = "http://savewaymarket.com/";
+                break;
+            case "Walmart":
+                URL = "https://www.walmart.ca/en";
+                break;
+            case "Nesters Market":
+                URL = "http://www.nestersmarket.com/";
+                break;
+            case "Superstore":
+                URL = "https://www.realcanadiansuperstore.ca/";
+                break;
+            case "TNT Supermarket":
+                URL = "https://www.tnt-supermarket.com/bc/";
+                break;
+                default:
+                    URL = "www.google.ca";
+                    break;
+        }
+        Intent i = new Intent(Intent.ACTION_VIEW);
+        i.setData(Uri.parse(URL));
+        startActivity(i);
     }
 }
