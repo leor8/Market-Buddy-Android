@@ -16,12 +16,14 @@ import java.util.List;
 public class StoreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private Context context;
     private List<String> stores;
+    private List<String> address;
     private String listid;
 
-    public StoreAdapter(Context context, List<String> stores, String listid) {
+    public StoreAdapter(Context context, List<String> stores, String listid, List<String> address) {
         this.context = context;
         this.stores = stores;
         this.listid = listid;
+        this.address = address;
     }
 
     @Override
@@ -33,9 +35,14 @@ public class StoreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position){
-        ((Item)holder).store_name.setText(stores.get(position).toString());
-        ((Item)holder).price.setText("$" + ((Item) holder).getTotal(((Item) holder).items));
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+        ((Item) holder).store_name.setText(stores.get(position).toString());
+        ((Item) holder).price.setText("$" + ((Item) holder).getTotal(((Item) holder).items));
+        if (position < address.size()) {
+            ((Item)holder).store_address.setText(address.get(position).toString());
+        } else {
+            ((Item)holder).store_address.setText("Loading...");
+        }
     }
 
     @Override
@@ -44,7 +51,7 @@ public class StoreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     }
 
     public class Item extends RecyclerView.ViewHolder implements View.OnClickListener{
-        TextView store_name, price;
+        TextView store_name, price, store_address;
         Context context;
         Button delete, edit;
         Price_db pricedb;
@@ -62,6 +69,7 @@ public class StoreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             pricedb = new Price_db(context);
 
             items = itemdb.getData(listid);
+            store_address = view.findViewById(R.id.address);
 
             price = view.findViewById(R.id.total);
         }
@@ -79,7 +87,6 @@ public class StoreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             float total = 0;
 
             for(int i = 0; i < curr_items.size(); i++) {
-                Log.d("Debug555", "Trying: " + items.get(i).get_item_itemid());
                 float each = Float.valueOf(pricedb.getPrice(store_name.getText().toString(), items.get(i).get_item_itemid()));
                 float with_quantity = each * items.get(i).get_item_quantity();
                 total += with_quantity;

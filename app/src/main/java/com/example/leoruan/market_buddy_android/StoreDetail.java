@@ -93,4 +93,5 @@ public class StoreDetail extends AppCompatActivity {
         i.setData(Uri.parse(URL));
         startActivity(i);
     }
+
 }

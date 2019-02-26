@@ -107,7 +107,7 @@ public class List_Edit extends AppCompatActivity implements SensorEventListener{
         shakable = false;
 
         // Getting filtered result
-        String myUrl = "http://api.walmartlabs.com/v1/search?apiKey=82fg7wp8wb54kxfxdhkaezrx&query=" + search_query;
+        String myUrl = "http://api.walmartlabs.com/v1/search?apiKey=" + getString(R.string.walmart_api) + "&query=" + search_query;
         new ReadJSONDataTask().execute(myUrl);
     }
 
@@ -133,7 +133,6 @@ public class List_Edit extends AppCompatActivity implements SensorEventListener{
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     // This will be used to display recyclerview outside
-                    Log.d("Debug555", "The item you just picked costs: " + price_array[which]);
                     if (user_selected.size() == 0) {
                         user_selected.add(new Item(filtered_array[which], 1, listid, id_array[which], price_array[which]));
                     } else {
@@ -228,7 +227,6 @@ public class List_Edit extends AppCompatActivity implements SensorEventListener{
 
     private class ReadJSONDataTask extends AsyncTask<String, Void, String> {
         Exception exception = null;
-
         protected String doInBackground(String... url) {
             try {
                 return readJSONData(url[0]);
@@ -240,6 +238,7 @@ public class List_Edit extends AppCompatActivity implements SensorEventListener{
         }
 
         protected void onPostExecute(String result) {
+            temp_item.clear();
             try {
                 JSONObject jsonObject = new JSONObject(result);
                 JSONArray results = jsonObject.getJSONArray("items");

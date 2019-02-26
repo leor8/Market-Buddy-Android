@@ -1,7 +1,9 @@
 package com.example.leoruan.market_buddy_android;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.support.annotation.NonNull;
@@ -24,17 +26,22 @@ import com.google.android.gms.tasks.Task;
 
 import org.json.JSONObject;
 
+import java.util.List;
 import java.util.Locale;
 
 public class Map extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
-    private static final int DEFAULT_ZOOM = 15;
+    private static final int DEFAULT_ZOOM = 14;
     private final LatLng mDefaultLocation = new LatLng(-33.8523341, 151.2106085);
     private boolean mLocationPermissionGranted;
     private Location mLastKnownLocation;
     private FusedLocationProviderClient mFusedLocationProviderClient;
+    Geocoder coder;
+    List<Address> address;
+    Intent received;
+    LatLng saveon, safeway, wal, nest, superstore, tnt;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +53,82 @@ public class Map extends FragmentActivity implements OnMapReadyCallback {
         mapFragment.getMapAsync(this);
 
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+
+        coder = new Geocoder(this);
+        received = getIntent();
+
+        // Save on foods marker latlong
+        try {
+            address = coder.getFromLocationName(received.getStringExtra("SAVEON"), 5);
+
+            if(address != null) {
+                Address location = address.get(0);
+                saveon = new LatLng(location.getLatitude(), location.getLongitude());
+            }
+        } catch (Exception e){
+            Log.d("DEBUG555", "ERROR");
+        }
+
+        // Safeway marker latlong
+        try {
+            address = coder.getFromLocationName(received.getStringExtra("SAFEWAY"), 5);
+
+            if(address != null) {
+                Address location = address.get(0);
+                safeway = new LatLng(location.getLatitude(), location.getLongitude());
+            }
+        } catch (Exception e){
+            Log.d("DEBUG555", "ERROR");
+        }
+
+        // walmart marker latlong
+        try {
+            address = coder.getFromLocationName(received.getStringExtra("WALMART"), 5);
+
+            if(address != null) {
+                Address location = address.get(0);
+                wal = new LatLng(location.getLatitude(), location.getLongitude());
+            }
+        } catch (Exception e){
+            Log.d("DEBUG555", "ERROR");
+        }
+
+        // NESTER marker latlong
+        try {
+            address = coder.getFromLocationName(received.getStringExtra("NESTERS"), 5);
+
+            if(address != null) {
+                Address location = address.get(0);
+                nest = new LatLng(location.getLatitude(), location.getLongitude());
+            }
+        } catch (Exception e){
+            Log.d("DEBUG555", "ERROR");
+        }
+
+        // superstore marker latlong
+        try {
+            address = coder.getFromLocationName(received.getStringExtra("SUPERSTORE"), 5);
+
+            if(address != null) {
+                Address location = address.get(0);
+                superstore = new LatLng(location.getLatitude(), location.getLongitude());
+            }
+        } catch (Exception e){
+            Log.d("DEBUG555", "ERROR");
+        }
+
+        // tnt marker latlong
+        try {
+            address = coder.getFromLocationName(received.getStringExtra("TNT"), 5);
+
+            if(address != null) {
+                Address location = address.get(0);
+                tnt = new LatLng(location.getLatitude(), location.getLongitude());
+            }
+        } catch (Exception e){
+            Log.d("DEBUG555", "ERROR");
+        }
+
     }
 
     @Override
@@ -54,6 +137,14 @@ public class Map extends FragmentActivity implements OnMapReadyCallback {
         getLocationPermission();
         updateLocationUI();
         getDeviceLocation();
+
+        mMap.addMarker(new MarkerOptions().position(saveon).title("Save On Foods").snippet(received.getStringExtra("SAVEON")));
+        mMap.addMarker(new MarkerOptions().position(safeway).title("Safeway").snippet(received.getStringExtra("SAFEWAY")));
+        mMap.addMarker(new MarkerOptions().position(wal).title("Walmart").snippet(received.getStringExtra("WALMART")));
+        mMap.addMarker(new MarkerOptions().position(nest).title("Nesters Market").snippet(received.getStringExtra("NESTERS")));
+        mMap.addMarker(new MarkerOptions().position(superstore).title("Superstore").snippet(received.getStringExtra("SUPERSTORE")));
+        mMap.addMarker(new MarkerOptions().position(tnt).title("TNT Supermarket").snippet(received.getStringExtra("TNT")));
+
     }
 
 
@@ -74,12 +165,6 @@ public class Map extends FragmentActivity implements OnMapReadyCallback {
                             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
                                     new LatLng(mLastKnownLocation.getLatitude(),
                                             mLastKnownLocation.getLongitude()), DEFAULT_ZOOM));
-
-                            Log.d("Debug555", "Current Lat:" + mLastKnownLocation.getLatitude() + " Current Long: " + mLastKnownLocation.getLongitude());
-
-//                            try {
-//                                JSONObject locationDetail = parser_Json.
-//                            }
 
                         } else {
                             Log.d("Debug555", "Current location is null. Using defaults.");

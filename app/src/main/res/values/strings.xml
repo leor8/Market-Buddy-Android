@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">Market-Buddy-Android</string>
     <string name="title_activity_map">Map</string>
+
+    <string name="walmart_api">YOUR WALMART API</string>
+    <string name="google_places_api">YOUR GOOGLE PLACES API</string>
 </resources>
